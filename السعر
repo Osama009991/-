@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عرض السعر</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .price-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .price-box {
+            background-color: #333;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .status, .date-time {
+            font-size: 20px;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+        .price {
+            font-size: 48px;
+            color: #4CAF50;
+            margin: 20px 0;
+        }
+        .admin-button {
+            padding: 15px 25px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #f39c12;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .admin-button:hover {
+            background-color: #e67e22;
+        }
+        .admin-page {
+            display: none;
+            margin-top: 30px;
+            background-color: #222;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+        }
+        .admin-input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            width: calc(100% - 22px);
+            margin-bottom: 10px;
+            background-color: #333;
+            color: #fff;
+        }
+        .update-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .update-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="price-container">
+        <div class="price-box">
+            <div class="status" id="status"></div>
+            <div id="priceDisplay" class="price"></div>
+            <div class="date-time" id="dateTime"></div>
+            <button class="admin-button" onclick="showAdminPage()">تحديث السعر والحالة</button>
+        </div>
+
+        <div id="adminPage" class="admin-page">
+            <input type="password" id="adminPassword" class="admin-input" placeholder="أدخل كلمة السر" />
+            <button onclick="verifyPassword()">تأكيد</button>
+        </div>
+    </div>
+
+    <script>
+        const correctPassword = 'Sam@1234';
+        let currentPrice = localStorage.getItem('currentPrice') || 65.8;
+        let currentStatus = localStorage.getItem('currentStatus') || 'استقرار';
+
+        function showAdminPage() {
+            document.getElementById('adminPage').innerHTML = `
+                <h2>تحديث السعر والحالة</h2>
+                <input type="number" id="newPrice" class="admin-input" placeholder="أدخل السعر الجديد" />
+                <input type="text" id="newStatus" class="admin-input" placeholder="أدخل الحالة العامة" />
+                <button class="update-button" onclick="updatePriceAndStatus()">تحديث</button>
+            `;
+            document.getElementById('adminPage').style.display = 'block';
+        }
+
+        function verifyPassword() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === correctPassword) {
+                showAdminPage();
+            } else {
+                alert('كلمة السر غير صحيحة');
+            }
+        }
+
+        function updatePriceAndStatus() {
+            const newPrice = document.getElementById('newPrice').value;
+            const newStatus = document.getElementById('newStatus').value;
+            
+            if (!newPrice || isNaN(newPrice)) {
+                alert('الرجاء إدخال سعر صحيح');
+                return;
+            }
+            if (!newStatus) {
+                alert('الرجاء إدخال الحالة العامة');
+                return;
+            }
+
+            currentPrice = newPrice;
+            currentStatus = newStatus;
+            
+            document.getElementById('priceDisplay').innerText = `سعر الجنيه المصري الآن: ${currentPrice}`;
+            document.getElementById('status').innerText = `الحالة العامة: ${currentStatus}`;
+
+            localStorage.setItem('currentPrice', currentPrice);
+            localStorage.setItem('currentStatus', currentStatus);
+
+            updateDateTime();
+            document.getElementById('adminPage').style.display = 'none';
+
+            alert(`تم تحديث السعر إلى ${currentPrice} والحالة العامة إلى ${currentStatus}`);
+        }
+
+        function updateDateTime() {
+            const now = new Date();
+            const dateTime = now.toLocaleDateString('ar-EG') + ' ' + now.toLocaleTimeString('ar-EG');
+            document.getElementById('dateTime').innerText = `تاريخ ووقت التحديث: ${dateTime}`;
+        }
+
+        // Initialize date and time and load stored values on page load
+        document.getElementById('priceDisplay').innerText = `سعر الجنيه المصري الآن: ${currentPrice}`;
+        document.getElementById('status').innerText = `الحالة العامة: ${currentStatus}`;
+        updateDateTime();
+    </script>
+</body>
+</html>
